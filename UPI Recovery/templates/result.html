@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Transaction Analysis</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">UPI<span>Recovery</span> AI</div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+
+</nav>
+
+
+<section class="result-section">
+
+    <div class="result-header">
+
+        <span class="badge">ANALYSIS COMPLETE</span>
+
+        <h1>Transaction Analysis</h1>
+
+        <p>Your recovery case has been created.</p>
+
+    </div>
+
+
+    <div class="result-card">
+
+        <h2>Case Information</h2>
+
+        <p><strong>Case ID:</strong> #{{ case['id'] }}</p>
+
+        <p>
+            <strong>Transaction ID:</strong>
+            {{ case['transaction_id'] }}
+        </p>
+
+        <p>
+            <strong>Amount:</strong>
+            ₹{{ "%.2f"|format(case['amount']) }}
+        </p>
+
+        <p>
+            <strong>Issue:</strong>
+            {{ case['issue_type'] }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ case['status'] }}
+        </p>
+
+    </div>
+
+
+    <div class="result-card">
+
+        <h2>AI Analysis</h2>
+
+        <p>{{ case['analysis'] }}</p>
+
+    </div>
+
+
+    <div class="result-card">
+
+        <h2>Recommended Recovery Steps</h2>
+
+        <ol class="guidance-list">
+
+            {% for step in case['guidance'].split('\n') %}
+
+                {% if step.strip() %}
+
+                    <li>{{ step }}</li>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </ol>
+
+    </div>
+
+
+    <div class="result-card">
+
+        <h2>Generated Complaint</h2>
+
+        <textarea id="complaintText"
+                  readonly>{{ case['complaint'] }}</textarea>
+
+        <button class="primary-btn"
+                onclick="copyComplaint()">
+
+            Copy Complaint
+
+        </button>
+
+    </div>
+
+
+    <div class="result-actions">
+
+        <a href="/dashboard" class="primary-btn">
+            Track My Case →
+        </a>
+
+        <a href="/" class="secondary-btn">
+            New Transaction
+        </a>
+
+    </div>
+
+</section>
+
+
+<footer>
+    <p>©️ 2026 UPI Recovery AI</p>
+</footer>
+
+
+<script>
+
+function copyComplaint() {
+
+    const text = document.getElementById("complaintText");
+
+    navigator.clipboard.writeText(text.value)
+        .then(() => alert("Complaint copied successfully!"))
+        .catch(() => alert("Unable to copy complaint."));
+
+}
+
+</script>
+
+</body>
+</html>

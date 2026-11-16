@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Recovery Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">UPI<span>Recovery</span> AI</div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+
+</nav>
+
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <span class="badge">CASE MANAGEMENT</span>
+
+        <h1>Recovery Dashboard</h1>
+
+        <p>Monitor your submitted transaction complaints.</p>
+
+    </div>
+
+
+    <div class="dashboard-stats">
+
+        <div class="stat-card">
+            <h3>{{ cases|length }}</h3>
+            <p>Total Cases</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>
+                {{ cases|selectattr('status', 'equalto', 'Submitted')|list|length }}
+            </h3>
+            <p>Submitted</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>
+                {{ cases|selectattr('status', 'equalto', 'Resolved')|list|length }}
+            </h3>
+            <p>Resolved</p>
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <h2>Your Recovery Cases</h2>
+
+        {% if cases %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Case ID</th>
+                    <th>Transaction ID</th>
+                    <th>Amount</th>
+                    <th>Issue</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+
+                {% for case in cases %}
+
+                <tr>
+
+                    <td>#{{ case['id'] }}</td>
+
+                    <td>{{ case['transaction_id'] }}</td>
+
+                    <td>₹{{ "%.2f"|format(case['amount']) }}</td>
+
+                    <td>{{ case['issue_type'] }}</td>
+
+                    <td>
+                        <span class="status">
+                            {{ case['status'] }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <a href="/case/{{ case['id'] }}"
+                           class="small-btn">
+                            View
+                        </a>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-state">
+            <h3>No Recovery Cases Yet</h3>
+            <p>Your submitted cases will appear here.</p>
+
+            <a href="/" class="primary-btn">
+                Report Transaction
+            </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<footer>
+    <p>©️ 2026 UPI Recovery AI</p>
+</footer>
+
+</body>
+</html>

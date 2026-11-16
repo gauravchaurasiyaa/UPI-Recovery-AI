@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Recovery Case Details | UPI Recovery AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .case-container {
+            max-width: 950px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .case-card {
+            background: #111b2e;
+            border: 1px solid #263650;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .case-card h2 {
+            margin-bottom: 18px;
+        }
+
+        .case-info p {
+            margin: 12px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .timeline {
+            margin: 25px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .timeline-icon {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            background: #263650;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .timeline-item.completed .timeline-icon {
+            background: #16865b;
+            color: white;
+        }
+
+        .timeline-item.current .timeline-icon {
+            background: #2563eb;
+            color: white;
+        }
+
+        .timeline-content h3 {
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        .timeline-content p {
+            color: #aab7cc;
+            font-size: 14px;
+        }
+
+        .complaint-box {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            background: #080f1e;
+            border: 1px solid #263650;
+            border-radius: 10px;
+            padding: 18px;
+            line-height: 1.7;
+        }
+
+        .status-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .status-form select,
+        .status-form button {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #344766;
+        }
+
+        .status-form button,
+        .copy-button {
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        .status-form button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .guidance-list li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .copy-button {
+            margin-top: 12px;
+            padding: 11px 18px;
+            border-radius: 8px;
+        }
+
+        .status-note {
+            color: #aab7cc;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="case-container"
+     id="caseContainer"
+     data-case-id="{{ case['id'] }}">
+
+    <a href="{{ url_for('dashboard') }}">
+        ← Back to Dashboard
+    </a>
+
+    <h1>Recovery Case Details</h1>
+
+
+    <!-- TRANSACTION INFORMATION -->
+
+    <div class="case-card">
+
+        <h2>Transaction Information</h2>
+
+        <div class="case-info">
+
+            <p>
+                <strong>Case ID:</strong>
+                {{ case['id'] }}
+            </p>
+
+            <p>
+                <strong>Transaction ID:</strong>
+                {{ case['transaction_id'] }}
+            </p>
+
+            <p>
+                <strong>Amount:</strong>
+                ₹{{ case['amount'] }}
+            </p>
+
+            <p>
+                <strong>Transaction Date:</strong>
+                {{ case['transaction_date'] or 'Not provided' }}
+            </p>
+
+            <p>
+                <strong>Issue Type:</strong>
+                {{ case['issue_type'] }}
+            </p>
+
+            <p>
+                <strong>Submitted On:</strong>
+                {{ case['created_at'] or 'Not available' }}
+            </p>
+
+            <p>
+                <strong>Current Status:</strong>
+
+                <span id="currentStatus">
+                    {{ case['status'] }}
+                </span>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECOVERY TIMELINE -->
+
+    <div class="case-card">
+
+        <h2>Recovery Progress Timeline</h2>
+
+        {% set status = case['status'] %}
+
+        <div class="timeline">
+
+            <!-- STEP 1 -->
+
+            <div class="timeline-item completed">
+
+                <div class="timeline-icon">
+                    ✓
+                </div>
+
+                <div class="timeline-content">
+
+                    <h3>Case Submitted</h3>
+
+                    <p>
+                        Your case has been saved in this website.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- STEP 2 -->
+
+            <div class="timeline-item
+                {% if status in ['Under Review', 'Resolved'] %}
+                    completed
+                {% elif status == 'Submitted' %}
+                    current
+                {% endif %}">
+
+                <div class="timeline-icon">
+
+                    {% if status in ['Under Review', 'Resolved'] %}
+                        ✓
+                    {% else %}
+                        2
+                    {% endif %}
+
+                </div>
+
+                <div class="timeline-content">
+
+                    <h3>Under Review</h3>
+
+                    <p>
+                        This is a tracking stage in the prototype.
+                        It does not confirm bank review.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- STEP 3 -->
+
+            <div class="timeline-item
+                {% if status == 'Resolved' %}
+                    completed
+                {% elif status == 'Under Review' %}
+                    current
+                {% endif %}">
+
+                <div class="timeline-icon">
+
+                    {% if status == 'Resolved' %}
+                        ✓
+                    {% else %}
+                        3
+                    {% endif %}
+
+                </div>
+
+                <div class="timeline-content">
+
+                    <h3>Resolved</h3>
+
+                    <p>
+                        Mark resolved only after the issue
+                        has actually been resolved.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- REJECTED STATUS -->
+
+            {% if status == 'Rejected' %}
+
+            <div class="timeline-item current">
+
+                <div class="timeline-icon">
+                    !
+                </div>
+
+                <div class="timeline-content">
+
+                    <h3>Rejected</h3>
+
+                    <p>
+                        Case marked as rejected in this prototype.
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- STATUS UPDATE -->
+
+        <h3>Update Case Status</h3>
+
+        <form id="statusForm" class="status-form">
+
+            <select id="statusSelect" required>
+
+                <option value="Submitted"
+                    {% if status == 'Submitted' %}selected{% endif %}>
+                    Submitted
+                </option>
+
+                <option value="Under Review"
+                    {% if status == 'Under Review' %}selected{% endif %}>
+                    Under Review
+                </option>
+
+                <option value="Resolved"
+                    {% if status == 'Resolved' %}selected{% endif %}>
+                    Resolved
+                </option>
+
+                <option value="Rejected"
+                    {% if status == 'Rejected' %}selected{% endif %}>
+                    Rejected
+                </option>
+
+            </select>
+
+            <button type="submit" id="updateButton">
+                Update Status
+            </button>
+
+        </form>
+
+        <p id="statusMessage" class="message"></p>
+
+        <p class="status-note">
+            Status changes are stored locally.
+            They do not represent verified bank or NPCI updates.
+        </p>
+
+    </div>
+
+
+    <!-- AI ANALYSIS -->
+
+    <div class="case-card">
+
+        <h2>AI Transaction Analysis</h2>
+
+        <p>{{ case['analysis'] }}</p>
+
+    </div>
+
+
+    <!-- RECOVERY GUIDANCE -->
+
+    <div class="case-card">
+
+        <h2>Recovery Guidance & Evidence Checklist</h2>
+
+        <ul class="guidance-list">
+
+            {% for item in (case['guidance'] or '').split('\n') %}
+
+                {% if item.strip() %}
+
+                    <li>{{ item }}</li>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+
+    <!-- COMPLAINT LETTER -->
+
+    <div class="case-card">
+
+        <h2>Generated Bank Complaint</h2>
+
+        <div class="complaint-box" id="complaintText">{{ case['complaint'] or 'No complaint available.' }}</div>
+
+        <button
+            class="copy-button"
+            id="copyButton"
+            type="button">
+
+            Copy Complaint
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    // Read Case ID from HTML data attribute.
+    // This avoids JavaScript errors caused by Jinja syntax.
+
+    const container = document.getElementById("caseContainer");
+
+    const caseId = container.dataset.caseId;
+
+
+    // STATUS UPDATE
+
+    const statusForm = document.getElementById("statusForm");
+
+    const statusMessage = document.getElementById("statusMessage");
+
+    const updateButton = document.getElementById("updateButton");
+
+
+    statusForm.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const selectedStatus =
+            document.getElementById("statusSelect").value;
+
+        statusMessage.textContent = "Updating status...";
+
+        updateButton.disabled = true;
+
+        try {
+
+            const response = await fetch(
+                `/api/case/${encodeURIComponent(caseId)}/status`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        status: selectedStatus
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error || "Unable to update status."
+                );
+
+            }
+
+            statusMessage.textContent =
+                "Status updated successfully.";
+
+            window.location.reload();
+
+        }
+
+        catch (error) {
+
+            statusMessage.textContent =
+                error.message || "Something went wrong.";
+
+        }
+
+        finally {
+
+            updateButton.disabled = false;
+
+        }
+
+    });
+
+
+    // COPY COMPLAINT
+
+    const copyButton = document.getElementById("copyButton");
+
+
+    copyButton.addEventListener("click", async function() {
+
+        const complaint =
+            document.getElementById("complaintText").innerText;
+
+        try {
+
+            await navigator.clipboard.writeText(complaint);
+
+            alert("Complaint copied successfully!");
+
+        }
+
+        catch (error) {
+
+            alert(
+                "Unable to copy complaint. Please copy it manually."
+            );
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
